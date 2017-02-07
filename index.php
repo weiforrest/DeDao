@@ -50,9 +50,12 @@ $selfName = $_SERVER["SCRIPT_NAME"];
                 if(!$page && $page > $pageRanger) {
                     $page = 1;
                 }
-
+                /*
+                 * 这里使用pageSize为长度显示分页栏
+                 */
                 $begin = $page - GetDedao::pageSize/2;
                 if($begin < 1) {
+                    // 在右边添加左边减少的长度
                     $end = $page + abs($begin) + GetDedao::pageSize/2;
                     $begin = 1;
                 } else {
@@ -63,7 +66,11 @@ $selfName = $_SERVER["SCRIPT_NAME"];
                 }
                 $endFlag = true;
                 if($end > $pageRanger) {
+                    // 计算右边截断的长度
+                    $com = $end - $pageRanger;
                     $end = $pageRanger;
+                    // 尝试将右边截断的长度添加到左边
+                    $begin = $begin - $com < 1 ? 1 : $begin - $com;
                     $endFlag = false;
                 }
 
