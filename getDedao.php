@@ -10,6 +10,7 @@ class GetDedao
     const bkMin = 8;
     const defaultRange = 100;
     const pageSize = 20;
+    const encode = 'utf8';
     private $_begin;
     private $_end;
     private $_db;
@@ -19,7 +20,7 @@ class GetDedao
     {
         try{
             $this->_db = new PDO(
-                'mysql:host=localhost;dbname='.self::dbName,
+                'mysql:host=localhost;dbname='.self::dbName.';charset='.self::encode,
                 'vagrant',
                 'vagrant',
                 [
@@ -48,12 +49,12 @@ class GetDedao
             is_book tinyint(1) not null,
             done tinyint not null default 0,
             audio varchar(256) not null,
-            primary key (id,number)) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            primary key (id,number)) CHARACTER SET utf8 ENGINE=InnoDB';
         $rangers = 'create table '.self::tbRanger.
             ' (id int unsigned not null AUTO_INCREMENT,
             begin int unsigned not null,
             end int unsigned not null,
-            primary key(id)) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            primary key(id)) CHARACTER SET utf8 ENGINE=InnoDB';
         $insertRanger = 'insert into '.self::tbRanger.
             '(begin, end) values (0,6400)';
         $errNotice = 'create table '.self::tbError.
@@ -61,13 +62,13 @@ class GetDedao
             number int unsigned not null,
             notice varchar(256) not null,
             time timestamp not null default CURRENT_TIMESTAMP,
-            primary key(id)) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            primary key(id)) CHARACTER SET utf8 ENGINE=InnoDB';
 
         try {
-            //$this->_db->query($rangers);
-            //$this->_db->query($insertRanger);
+            $this->_db->query($rangers);
+            $this->_db->query($insertRanger);
             $this->_db->query($entries);
-            //$this->_db->query($errNotice);
+            $this->_db->query($errNotice);
         } catch (PDOException $e) {
             print "Error!: " . $e->getMessage() . "<br/>";
             die();
@@ -112,6 +113,7 @@ class GetDedao
 
             $entry["number"] = $i;
             $entry["is_book"] = (self::IsBook($entry['time']) ? 1 : 0);
+            print_r($entry);
             $entries[] = $entry;
         }
         $this->InsertEntries($entries);
