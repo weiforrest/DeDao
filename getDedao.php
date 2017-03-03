@@ -22,7 +22,7 @@ class GetDedao
             $this->_db = new PDO(
                 'mysql:host=localhost;dbname='.self::dbName.';charset='.self::encode,
                 'vagrant',
-                'vagrant',
+                '',
                 [
                     PDO::ATTR_PERSISTENT => true,
                 ]);
@@ -79,8 +79,8 @@ class GetDedao
     public function Update($range = self::defaultRange)
     {
         $this->GetRanger();
-        $this->GetRemote($this->end, $this->end + $range);
-        $this->SetRanger($this->end, $this->end + $range);
+        $this->GetRemote($this->_end, $this->_end + $range);
+        $this->SetRanger($this->_end, $this->_end + $range);
     }
 
     // from Remote server get entry
@@ -184,14 +184,17 @@ class GetDedao
 
     protected function GetRanger()
     {
-        $rows = $this->_db->query('select * from '. self::tbRanger. 'where id=1');
-        $_begin = $row[0]['begin'];
-        $_end = $row[0]['end'];
+        $rows = $this->_db->query('select begin,end  from '. self::tbRanger. 'where id=1');
+        foreach($rows as $row){
+            $this->_begin = $row['begin'];
+            $this->_end = $row['end'];
+            break;
+        }
     }
 
-    protected function SetRanger()
+    protected function SetRanger($begin,$end)
     {
-        $row = $this->_db->query('update ' . self::tbRanger .'SET begin='.$_begin.',end='.$_end.'where id=1');
+        $row = $this->_db->query('update ' . self::tbRanger .'SET begin='.$begin.',end='.$end.' where id=1');
     }
 
     static function IsBook($time)
@@ -202,4 +205,7 @@ class GetDedao
 
 
 }
+
+//$run = new GetDedao();
+//$run->CreateDateBase();
 ?>
